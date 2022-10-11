@@ -10,17 +10,13 @@ app.config['MONGO_URI'] = 'mongodb://root:root@<url>:27017/admin'
 
 mongo = PyMongo(app)
 @app.route('/')
-def admin():
+def admin():  
     return render_template('index.html')
 
-@app.route('/listq', methods = ['GET'])
-def get_animals():
-    db = get_db()
-    _questions = db.question.find({})
-    return render_template('index.html', results = _questions)
 
 
 def get_db():
+    ## connection a la bdd mongo
     client = MongoClient(host='test_mongodb',
                          port=27017,
                          username='root',
@@ -29,11 +25,17 @@ def get_db():
     db = client["quizdb"]
     return db
 
+@app.route('/listq', methods = ['GET'])
+def get_animals():
+    db = get_db()
+    _questions = db.question.find({}) ## find toutes les questions
+    return render_template('index.html', results = _questions)
+
 
 @app.route('/mongo', methods=['GET'])
 def get_all_docs():
     db = get_db()
-    doc = db.question.insert_one({'abcd':'abcd'})
+    doc = db.question.insert_one({'abcd':'abcd'})   ## entre 1 document dans la bdd
     return "Inserted"
 @app.route('/insert', methods=['GET'])
 def insertData():
@@ -41,7 +43,7 @@ def insertData():
     url = request.form['question']
     answer = request.form['answer']
     dict = {"url":url,"answer":answer}
-    db.question.insert_one({"url":url,"answer":answer})
+    db.question.insert_one({"url":url,"answer":answer})  ## récupère les informations depuis la formulaire et les entres dans la base
     return render_template('index.html', results = dict)
 
 if __name__ == '__main__':
